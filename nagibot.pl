@@ -206,6 +206,8 @@ $connection->reg_cb (
             message => sub {
                 my ($con, $room, $msg, $is_echo) = @_;
 
+                return unless $msg->any_body;
+
                 return if $is_echo;
 
                 print "Message (" . $room->jid .") from " . $msg->from . ": " . $msg->any_body . "\n" if $verbose > 2;
