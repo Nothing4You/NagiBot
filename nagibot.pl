@@ -35,6 +35,7 @@ use Sys::CpuLoad;
 use POSIX qw(setsid);
 use File::Pid;
 use HTML::Entities;
+use Encode;
 
 use vars qw($event $timer_event $io_event $connection $disco $muc $terminating);
 
@@ -291,15 +292,15 @@ $io_event = AnyEvent->io (
                 # TODO: Implement rejoin
                 return;
             }
-            my $msg =  $r->make_message (body => $input);
-            &HtmlifyMsg($msg, $input) if $config->{'htmlify_msg'};
+            my $msg =  $r->make_message (body => Encode::decode( 'UTF-8', $input ));
+            &HtmlifyMsg($msg, Encode::decode( 'UTF-8', $input )) if $config->{'htmlify_msg'};
             $msg->send ();
         }
 
         # send message to all users
         foreach my $ujid (@$jids) {
-            my $msg =  AnyEvent::XMPP::IM::Message->new (to => $ujid, body => $input, type => 'chat');
-            &HtmlifyMsg($msg, $input) if $config->{'htmlify_msg'};
+            my $msg =  AnyEvent::XMPP::IM::Message->new (to => $ujid, body => Encode::decode( 'UTF-8', $input ), type => 'chat');
+            &HtmlifyMsg($msg, Encode::decode( 'UTF-8', $input )) if $config->{'htmlify_msg'};
             $msg->send ($connection);
         }
 
